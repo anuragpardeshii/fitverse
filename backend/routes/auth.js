@@ -13,17 +13,25 @@ router.get(
 );
 
 // Google OAuth Callback
-router.get("/google/callback", (req, res, next) => {
-  passport.authenticate("google", (err, user, info) => {
-    if (err) return res.redirect(`${FRONTEND_URL}/login?error=auth_failed`);
-    if (!user) return res.redirect(`${FRONTEND_URL}/login?error=no_user`);
+router.get(
+  "/google/callback",
+  passport.authenticate("google", {
+    successRedirect: `${FRONTEND_URL}/dashboard`, // frontend URL
+    failureRedirect: `${FRONTEND_URL}/login`, // frontend login page
+  })
+);
 
-    req.logIn(user, (err) => {
-      if (err) return res.redirect(`${FRONTEND_URL}/login?error=login_failed`);
-      return res.redirect(`${FRONTEND_URL}/dashboard`);
-    });
-  })(req, res, next);
-});
+// router.get("/google/callback", (req, res, next) => {
+//   passport.authenticate("google", (err, user, info) => {
+//     if (err) return res.redirect(`${FRONTEND_URL}/login?error=auth_failed`);
+//     if (!user) return res.redirect(`${FRONTEND_URL}/login?error=no_user`);
+
+//     req.logIn(user, (err) => {
+//       if (err) return res.redirect(`${FRONTEND_URL}/login?error=login_failed`);
+//       return res.redirect(`${FRONTEND_URL}/dashboard`);
+//     });
+//   })(req, res, next);
+// });
 
 // Get User Info (Session-based authentication)
 router.get("/user", (req, res) => {
