@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
     if (!userId) return;
     try {
       const { data } = await axios.get(
-        `${BACKEND_URL}/api/users/balance/${userId}`
+        `${BACKEND_URL}/api/users/balance/${userId}`, { withCredentials: true }
       );
       if (data.success) {
         setBalance(data.balance);
