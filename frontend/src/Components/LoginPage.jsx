@@ -1,15 +1,35 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Trophy, BarChart3, Gift, Activity, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const { user, login, logout, authError } = useAuth();
+  const { user, login, logout, authError, loading } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const locationAuthError = location.state?.authError;
   const errorMessage = authError || locationAuthError;
+
+  // Redirect to dashboard if user is already authenticated
+  useEffect(() => {
+    if (user && !loading) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [user, loading, navigate]);
+
+  // Show loading state while authentication is being checked
+  if (loading) {
+    return (
+      <div className="flex min-h-screen bg-gray-50 justify-center items-center p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-50 justify-center items-center p-4">
@@ -44,128 +64,65 @@ const Login = () => {
               </div>
             )}
 
-            {user ? (
-              <div className="flex flex-col items-center gap-4 rounded-lg bg-gray-100 p-6 text-center border border-gray-200">
-                <img
-                  src={user.picture}
-                  alt="Profile"
-                  className="h-20 w-20 rounded-full border-2 border-blue-500 object-cover shadow-sm"
-                />
-                <h2 className="text-xl font-semibold text-gray-800">
-                  {user.name}
-                </h2>
-
-                <p className="text-sm text-gray-600">{user.email}</p>
-
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={logout}
-                  className="mt-4 w-full flex items-center justify-center space-x-2 rounded-md bg-red-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                >
-                  <LogOut size={18} />
-                  <span>Logout</span>
-                </motion.button>
-              </div>
-            ) : (
-              <>
-                <div className="mb-6">
-                  <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => login()}
-                    className="flex w-full items-center justify-center gap-3 rounded-md bg-blue-600 px-5 py-3 text-base font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  >
-                    <img
-                      src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg"
-                      alt="Google"
-                      className="h-5 w-5"
-                    />
-                    Sign in with Google
-                  </motion.button>
-                </div>
-
-                <div className="mt-6 text-center text-xs text-gray-500">
-                  By signing in, you agree to our{" "}
-                  <a
-                    href="#"
-                    className="font-medium text-blue-600 hover:underline"
-                  >
-                    Terms of Service
-                  </a>
-                  and
-                  <a
-                    href="#"
-                    className="font-medium text-blue-600 hover:underline"
-                  >
-                    Privacy Policy
-                  </a>
-                  .
-                </div>
-              </>
-            )}
+            <button
+              onClick={login}
+              className="mt-6 w-full flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+            >
+              <img
+                src="https://www.google.com/favicon.ico"
+                alt="Google"
+                className="w-5 h-5 mr-2"
+              />
+              Sign in with Google
+            </button>
           </div>
-          <div
-            className="hidden md:flex w-3/5 bg-cover bg-center relative" // Added relative positioning
-            style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Zml0bmVzc3xlbnwwfHwwfHx8MA%3D%3D')`,
-            }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-900/70 via-black/60 to-black/70"></div>
-            <div className="relative flex h-full flex-col items-center justify-center p-12 text-center text-white z-10">
-              <motion.h2
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-                className="mb-6 text-4xl font-bold leading-tight"
-              >
-                Unlock Your Potential
-              </motion.h2>
-              <motion.p
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-                className="mb-12 text-lg text-gray-200"
-              >
-                Track progress, conquer challenges, and earn rewards with
-                FitVerse.
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6, duration: 0.5 }}
-                className="grid grid-cols-3 gap-6 w-full max-w-md"
-              >
-                <motion.div
-                  whileHover={{ y: -5, scale: 1.05 }}
-                  className="flex flex-col items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm p-5 shadow-lg text-gray-800 h-36"
-                >
-                  <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100 text-yellow-600">
-                    <Trophy size={20} />
-                  </div>
-                  <p className="text-sm font-semibold">Challenges</p>
-                </motion.div>
 
-                <motion.div
-                  whileHover={{ y: -5, scale: 1.05 }}
-                  className="flex flex-col items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm p-5 shadow-lg text-gray-800 h-36"
-                >
-                  <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-green-100 text-green-600">
-                    <BarChart3 size={20} />
+          <div className="hidden md:block md:w-3/5 bg-gradient-to-br from-blue-500 to-indigo-600 p-8 md:p-12">
+            <div className="h-full flex flex-col justify-center">
+              <h3 className="text-2xl font-bold text-white mb-6">
+                Track Your Fitness Journey
+              </h3>
+              <div className="space-y-6">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 bg-white/10 p-2 rounded-lg">
+                    <Activity className="h-6 w-6 text-white" />
                   </div>
-                  <p className="text-sm font-semibold">Progress</p>
-                </motion.div>
-
-                <motion.div
-                  whileHover={{ y: -5, scale: 1.05 }}
-                  className="flex flex-col items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm p-5 shadow-lg text-gray-800 h-36"
-                >
-                  <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600">
-                    <Gift size={20} />
+                  <div className="ml-4">
+                    <h4 className="text-lg font-medium text-white">
+                      Activity Tracking
+                    </h4>
+                    <p className="mt-1 text-blue-100">
+                      Log your workouts and track your progress over time.
+                    </p>
                   </div>
-                  <p className="text-sm font-semibold">Rewards</p>
-                </motion.div>
-              </motion.div>
+                </div>
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 bg-white/10 p-2 rounded-lg">
+                    <Trophy className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="ml-4">
+                    <h4 className="text-lg font-medium text-white">
+                      Join Challenges
+                    </h4>
+                    <p className="mt-1 text-blue-100">
+                      Compete with friends and earn rewards for your achievements.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 bg-white/10 p-2 rounded-lg">
+                    <Gift className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="ml-4">
+                    <h4 className="text-lg font-medium text-white">
+                      Earn Rewards
+                    </h4>
+                    <p className="mt-1 text-blue-100">
+                      Get coins for completing challenges and redeem them for prizes.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

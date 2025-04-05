@@ -19,8 +19,8 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
   const navigate = useNavigate();
-  const { user, logout, balance } = useAuth();
-  console.log("Profile Picture URL:", user?.profilePicture);
+  const { user, logout, balance, loading } = useAuth();
+  console.log("Auth state:", { user, loading });
   const location = useLocation();
 
   useEffect(() => {
@@ -64,6 +64,24 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   }, [location.pathname, setIsMobileMenuOpen]);
 
   if (location.pathname === "/login") return null;
+  if (loading) {
+    return (
+      <nav className="bg-white backdrop-blur-sm bg-opacity-90 border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-2">
+              <IoMdFitness className="text-3xl text-blue-600" />
+              <h1 className="text-3xl font-bold">
+                <span className="text-gray-800">Fit</span>
+                <span className="text-blue-600">Verse</span>
+              </h1>
+            </div>
+            <div className="text-gray-500">Loading...</div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
   if (!user) return null;
 
   const navItems = [

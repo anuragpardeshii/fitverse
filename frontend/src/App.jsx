@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
+import { Route, Routes, Navigate, useNavigate, useLocation } from "react-router-dom";
 import Navbar from "./Components/Navbar.jsx";
 import RewardsPage from "./Components/RewardsPage.jsx";
 import ActivityPage from "./Components/ActivityPage.jsx";
@@ -24,13 +24,20 @@ const ProtectedRoute = ({ children }) => {
 
 const AuthWrapper = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, loading } = useAuth();
+  const location = useLocation();
+
+  // Don't show the navbar on the login page
+  const showNavbar = location.pathname !== "/login" && !loading;
 
   return (
     <div className="min-h-screen">
-      <Navbar
-        isMobileMenuOpen={isMobileMenuOpen}
-        setIsMobileMenuOpen={setIsMobileMenuOpen}
-      />
+      {showNavbar && (
+        <Navbar
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
+        />
+      )}
       <div className="transition-all duration-300">
         <Routes>
           <Route path="/" element={<LandingPage />} />
@@ -38,9 +45,9 @@ const AuthWrapper = () => {
           <Route
             path="/dashboard"
             element={
-              <>
+              <ProtectedRoute>
                 <FitnessDashboard />
-              </>
+              </ProtectedRoute>
             }
           />
           <Route
